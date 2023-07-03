@@ -4,8 +4,10 @@ import styles from './page.module.css'
 import { AppBar, Box, Button, Toolbar, Typography } from '@mui/material'
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 export default function Home() {
+  const [isLogin, setIsLogin] = useState<boolean>(false)
 
   const { push } = useRouter();
 
@@ -13,7 +15,13 @@ export default function Home() {
     localStorage.removeItem('isLogin')
     localStorage.removeItem('user')
     push('/')
+    setIsLogin(false)
   }
+
+  useEffect(() => {
+    setIsLogin(localStorage.getItem('isLogin') ? true : false)
+  }, [])
+
   return (
     <Box>
       <AppBar position='static'>
@@ -35,13 +43,13 @@ export default function Home() {
             </Box>
             <Box>
               {
-                localStorage.getItem('isLogin') &&
+                isLogin &&
                 <Button variant='text' color="inherit" onClick={logOut}>
                   Cerrar Sesion
                 </Button>
               }
               {
-                !localStorage.getItem('isLogin') &&
+                !isLogin &&
                 <Link href={"/login"}>
                   <Button variant='text' color="inherit">
                     Inicio de Sesion
