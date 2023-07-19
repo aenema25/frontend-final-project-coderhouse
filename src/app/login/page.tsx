@@ -112,6 +112,7 @@ const LoginPage: FC = () => {
                         variant='contained'
                         fullWidth
                         size='small'
+                        onClick={()=>push('/register')}
                     >
                         Registrarse
                     </Button>

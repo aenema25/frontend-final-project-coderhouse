@@ -1,70 +1,49 @@
 'use client';
-import Image from 'next/image'
-import styles from './page.module.css'
 import { AppBar, Box, Button, Toolbar, Typography } from '@mui/material'
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+
 import { useEffect, useState } from 'react';
+import ProductCard from '@/components/ProductCard';
+import { ProductType } from '@/components/ProductCard/types';
+import styles from './page.module.css'
 
 export default function Home() {
-  const [isLogin, setIsLogin] = useState<boolean>(false)
 
-  const { push } = useRouter();
 
-  const logOut = () => {
-    localStorage.removeItem('isLogin')
-    localStorage.removeItem('user')
-    push('/')
-    setIsLogin(false)
+  const [products, setProducts] = useState<any>([])
+
+  
+
+  
+
+  const getProducts = async () => {
+    const products = await fetch(`${process.env.NEXT_PUBLIC_API_HOST}/api/products`, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+    })
+    const response = await products.json()
+    if (response.status === "success") {
+      setProducts(response.payload)
+    }
   }
 
   useEffect(() => {
-    setIsLogin(localStorage.getItem('isLogin') ? true : false)
+    getProducts()
   }, [])
 
   return (
     <Box>
-      <AppBar position='static'>
-        <Toolbar>
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              width: '100%'
-            }}>
-            <Box>
-              Logo
-            </Box>
-            <Box>
-              <Typography>
-                Tienda
-              </Typography>
-            </Box>
-            <Box>
-              {
-                isLogin &&
-                <Button variant='text' color="inherit" onClick={logOut}>
-                  Cerrar Sesion
-                </Button>
-              }
-              {
-                !isLogin &&
-                <Link href={"/login"}>
-                  <Button variant='text' color="inherit">
-                    Inicio de Sesion
-                  </Button>
-                </Link>
-              }
-              <Link href={"/register"}>
-                <Button variant='text' color="inherit">
-                  Registro
-                </Button>
-              </Link>
-            </Box>
-          </Box>
-        </Toolbar>
-      </AppBar>
+      
+      <div className={styles['products-container']}>
+        {
+          products &&
+          products.map((product: ProductType) => (
+            <ProductCard {...product} />
+          ))
+        }
+      </div>
+
     </Box>
   )
 }
